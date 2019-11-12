@@ -11,7 +11,9 @@ import androidx.core.app.ComponentActivity
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.widget.RadioButton
 import android.widget.RadioGroup
+import kotlinx.android.synthetic.main.activity_2.*
 
 
 class Activity2 : AppCompatActivity() {
@@ -26,10 +28,13 @@ class Activity2 : AppCompatActivity() {
         setContentView(R.layout.activity_2)
         findViewById<TextView>(R.id.textView).text = MainActivity.data.predmet
         val myRadioGroup = findViewById<RadioGroup>(R.id.myRadioGroup)
+        myRadioGroup.check(findViewById<RadioButton>(R.id.radioButton2).id)
         for (i in 1..5) {
             poleCisiel.add(Cislo())
         }
         val queueLengthText = findViewById<TextView>(R.id.queueLength)
+        val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
+        queueLengthText.text = "Dlzka fronty: " + poleCisiel[index].fronta.size.toString()
         val addToQueue = findViewById<Button>(R.id.addToQueue)
         addToQueue.setOnClickListener {
             val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
@@ -70,6 +75,10 @@ class Activity2 : AppCompatActivity() {
             startObsluhy.isEnabled = true
             endObsluhy.isEnabled = false
             println(poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].id.toString() + poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].casZaciatku + poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].casKonca)
+        }
+        myRadioGroup.setOnCheckedChangeListener { _, _ ->
+            val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
+            queueLengthText.text = "Dlzka fronty: " + poleCisiel[index].fronta.size.toString()
         }
     }
 }
