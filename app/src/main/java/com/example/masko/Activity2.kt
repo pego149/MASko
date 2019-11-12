@@ -1,5 +1,8 @@
 package com.example.masko
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -11,10 +14,18 @@ import androidx.core.app.ComponentActivity
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.os.Environment
+import android.util.Log
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_2.*
-
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
+private val CSV_HEADER = "idfronta,dlzkafronty,casfronty"
+private val CSV_HEADER_SERV = "idserv,casprichodu,casodchodu"
 
 class Activity2 : AppCompatActivity() {
     class Cislo {
@@ -30,7 +41,7 @@ class Activity2 : AppCompatActivity() {
         findViewById<TextView>(R.id.textView).text = MainActivity.data.predmet
         val myRadioGroup = findViewById<RadioGroup>(R.id.myRadioGroup)
         myRadioGroup.check(findViewById<RadioButton>(R.id.radioButton2).id)
-        for (i in 1..5) {
+        for (i in 1..6) {
             poleCisiel.add(Cislo())
         }
         val queueLengthText = findViewById<TextView>(R.id.queueLength)
@@ -85,5 +96,79 @@ class Activity2 : AppCompatActivity() {
             startObsluhy.isEnabled = !poleCisiel[index].prebiehaObsluha
             endObsluhy.isEnabled = poleCisiel[index].prebiehaObsluha
         }
+        val export = findViewById<Button>(R.id.export)
+        export.setOnClickListener {
+            var fileWriter: FileWriter? = null
+            try {
+                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "fronta.csv"))
+                fileWriter.append(CSV_HEADER)
+                fileWriter.append('\n')
+
+                for (cislo in poleCisiel) {
+                    for (pole in cislo.frontaForOutput) {
+                        fileWriter.append(pole.id.toString())
+                        fileWriter.append(',')
+                        fileWriter.append(pole.length.toString())
+                        fileWriter.append(',')
+                        fileWriter.append(pole.time)
+                        fileWriter.append('\n')
+                    }
+                    fileWriter.append('\n')
+                }
+
+                println("Write CSV successfully!")
+            } catch (e: Exception) {
+                println("Writing CSV error!")
+                e.printStackTrace()
+            } finally {
+                try {
+                    fileWriter!!.flush()
+                    fileWriter.close()
+                } catch (e: IOException) {
+                    println("Flushing/closing error!")
+                    e.printStackTrace()
+                }
+            }
+            try {
+                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "serv.csv"))
+                fileWriter.append(CSV_HEADER_SERV)
+                fileWriter.append('\n')
+
+                for (cislo in poleCisiel) {
+                    for (pole in cislo.obsluzene) {
+                        fileWriter.append(pole.id.toString())
+                        fileWriter.append(',')
+                        fileWriter.append(pole.casZaciatku)
+                        fileWriter.append(',')
+                        fileWriter.append(pole.casKonca)
+                        fileWriter.append('\n')
+                    }
+                    fileWriter.append('\n')
+                }
+
+                println("Write CSV successfully!")
+            } catch (e: Exception) {
+                println("Writing CSV error!")
+                e.printStackTrace()
+            } finally {
+                try {
+                    fileWriter!!.flush()
+                    fileWriter.close()
+                } catch (e: IOException) {
+                    println("Flushing/closing error!")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    fun getPrivateAlbumStorageDir(context: Context, albumName: String): File? {
+        // Get the directory for the app's private pictures directory.
+        val file = File(context.getExternalFilesDir(
+            Environment.DIRECTORY_DOWNLOADS), albumName)
+        if (!file?.mkdirs()) {
+            Log.e("123", "Directory not created")
+        }
+        return file
     }
 }

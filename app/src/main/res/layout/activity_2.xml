@@ -66,6 +66,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="5" />
+
+        <RadioButton
+            android:id="@+id/radioButton7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6" />
     </RadioGroup>
 
     <Button
@@ -80,5 +86,11 @@
         android:layout_height="wrap_content"
         android:enabled="false"
         android:text="Ukonci obsluhu" />
+
+    <Button
+        android:id="@+id/export"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Export" />
 
 </LinearLayout>
