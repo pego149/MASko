@@ -21,6 +21,7 @@ class Activity2 : AppCompatActivity() {
         var fronta = ArrayList<QueueItem>()
         var frontaForOutput = ArrayList<QueueItem>()
         var obsluzene = ArrayList<ObsluzeneItem>()
+        var prebiehaObsluha = false
     }
     var poleCisiel = ArrayList<Cislo>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +63,7 @@ class Activity2 : AppCompatActivity() {
             val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
             if (poleCisiel[index].fronta.size > 0) {
                 poleCisiel[index].obsluzene.add(ObsluzeneItem(poleCisiel[index].obsluzene.size, Calendar.getInstance().time.toString()))
+                poleCisiel[index].prebiehaObsluha = true
                 startObsluhy.isEnabled = false
                 endObsluhy.isEnabled = true
                 poleCisiel[index].fronta.removeAt(0)
@@ -72,6 +74,7 @@ class Activity2 : AppCompatActivity() {
         endObsluhy.setOnClickListener {
             val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
             poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].casKonca = Calendar.getInstance().time.toString()
+            poleCisiel[index].prebiehaObsluha = false
             startObsluhy.isEnabled = true
             endObsluhy.isEnabled = false
             println(poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].id.toString() + poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].casZaciatku + poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].casKonca)
@@ -79,6 +82,8 @@ class Activity2 : AppCompatActivity() {
         myRadioGroup.setOnCheckedChangeListener { _, _ ->
             val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
             queueLengthText.text = "Dlzka fronty: " + poleCisiel[index].fronta.size.toString()
+            startObsluhy.isEnabled = !poleCisiel[index].prebiehaObsluha
+            endObsluhy.isEnabled = poleCisiel[index].prebiehaObsluha
         }
     }
 }
