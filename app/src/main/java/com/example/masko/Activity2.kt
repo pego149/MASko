@@ -100,9 +100,10 @@ class Activity2 : AppCompatActivity() {
         }
         val export = findViewById<Button>(R.id.export)
         export.setOnClickListener {
+            var cas = Calendar.getInstance().timeInMillis.toString()
             var fileWriter: FileWriter? = null
             try {
-                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "fronta" + Calendar.getInstance().timeInMillis.toString() + ".csv"))
+                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "fronta$cas.csv"))
                 fileWriter.append(CSV_HEADER)
                 fileWriter.append('\n')
 
@@ -134,7 +135,7 @@ class Activity2 : AppCompatActivity() {
                 }
             }
             try {
-                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "serv" + Calendar.getInstance().timeInMillis.toString() + ".csv"))
+                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "serv$cas.csv"))
                 fileWriter.append(CSV_HEADER_SERV)
                 fileWriter.append('\n')
 
