@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
@@ -16,8 +14,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Environment
 import android.util.Log
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_2.*
@@ -28,7 +25,8 @@ private val CSV_HEADER = "idfronta,dlzkafronty,casfronty"
 private val CSV_HEADER_SERV = "idserv,casprichodu,casodchodu"
 
 class Activity2 : AppCompatActivity() {
-    class Cislo {
+    class Cislo(num: Number) {
+        var id = num
         var fronta = ArrayList<QueueItem>()
         var frontaForOutput = ArrayList<QueueItem>()
         var obsluzene = ArrayList<ObsluzeneItem>()
@@ -40,9 +38,10 @@ class Activity2 : AppCompatActivity() {
         setContentView(R.layout.activity_2)
         findViewById<TextView>(R.id.textView).text = MainActivity.data.predmet
         val myRadioGroup = findViewById<RadioGroup>(R.id.myRadioGroup)
+        val textPoznamky = findViewById<EditText>(R.id.note)
         myRadioGroup.check(findViewById<RadioButton>(R.id.radioButton2).id)
         for (i in 1..6) {
-            poleCisiel.add(Cislo())
+            poleCisiel.add(Cislo(i))
         }
         val queueLengthText = findViewById<TextView>(R.id.queueLength)
         val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
@@ -73,13 +72,16 @@ class Activity2 : AppCompatActivity() {
         startObsluhy.setOnClickListener {
             val index = myRadioGroup.indexOfChild(findViewById(myRadioGroup.checkedRadioButtonId)) - 1
             if (poleCisiel[index].fronta.size > 0) {
-                poleCisiel[index].obsluzene.add(ObsluzeneItem(poleCisiel[index].obsluzene.size, Calendar.getInstance().time.toString()))
+                val item = QueueItem(poleCisiel[index].frontaForOutput.size, poleCisiel[index].fronta.size - 1, Calendar.getInstance().time.toString())
+                poleCisiel[index].obsluzene.add(ObsluzeneItem(poleCisiel[index].obsluzene.size, Calendar.getInstance().time.toString(), textPoznamky.text.toString()))
                 poleCisiel[index].prebiehaObsluha = true
                 startObsluhy.isEnabled = false
                 endObsluhy.isEnabled = true
                 poleCisiel[index].fronta.removeAt(0)
+                poleCisiel[index].frontaForOutput.add(item)
                 queueLengthText.text = "Dlzka fronty: " + poleCisiel[index].fronta.size.toString()
                 println(poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].id.toString() + poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].casZaciatku + poleCisiel[index].obsluzene[poleCisiel[index].obsluzene.size - 1].casKonca)
+                textPoznamky.setText("")
             }
         }
         endObsluhy.setOnClickListener {
@@ -106,6 +108,8 @@ class Activity2 : AppCompatActivity() {
 
                 for (cislo in poleCisiel) {
                     for (pole in cislo.frontaForOutput) {
+                        fileWriter.append(cislo.id.toString())
+                        fileWriter.append(',')
                         fileWriter.append(pole.id.toString())
                         fileWriter.append(',')
                         fileWriter.append(pole.length.toString())
@@ -136,11 +140,15 @@ class Activity2 : AppCompatActivity() {
 
                 for (cislo in poleCisiel) {
                     for (pole in cislo.obsluzene) {
+                        fileWriter.append(cislo.id.toString())
+                        fileWriter.append(',')
                         fileWriter.append(pole.id.toString())
                         fileWriter.append(',')
                         fileWriter.append(pole.casZaciatku)
                         fileWriter.append(',')
                         fileWriter.append(pole.casKonca)
+                        fileWriter.append(',')
+                        fileWriter.append(pole.poznamka)
                         fileWriter.append('\n')
                     }
                     fileWriter.append('\n')
@@ -160,15 +168,5 @@ class Activity2 : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    fun getPrivateAlbumStorageDir(context: Context, albumName: String): File? {
-        // Get the directory for the app's private pictures directory.
-        val file = File(context.getExternalFilesDir(
-            Environment.DIRECTORY_DOWNLOADS), albumName)
-        if (!file?.mkdirs()) {
-            Log.e("123", "Directory not created")
-        }
-        return file
     }
 }

@@ -80,6 +80,14 @@
         android:layout_height="wrap_content"
         android:text="Zacni obsluhu" />
 
+    <EditText
+        android:id="@+id/note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Poznamka"
+        android:inputType="textPersonName" />
+
     <Button
         android:id="@+id/endObsluhy"
         android:layout_width="match_parent"
