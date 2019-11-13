@@ -21,8 +21,8 @@ import kotlinx.android.synthetic.main.activity_2.*
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-private val CSV_HEADER = "idfronta,dlzkafronty,casfronty"
-private val CSV_HEADER_SERV = "idserv,casprichodu,casodchodu"
+private val CSV_HEADER = "cislostojanu,idfronta,dlzkafronty,casfronty"
+private val CSV_HEADER_SERV = "cislostojanu,idserv,casprichodu,casodchodu"
 
 class Activity2 : AppCompatActivity() {
     class Cislo(num: Number) {
@@ -102,7 +102,7 @@ class Activity2 : AppCompatActivity() {
         export.setOnClickListener {
             var fileWriter: FileWriter? = null
             try {
-                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "fronta.csv"))
+                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "fronta" + Calendar.getInstance().timeInMillis.toString() + ".csv"))
                 fileWriter.append(CSV_HEADER)
                 fileWriter.append('\n')
 
@@ -134,7 +134,7 @@ class Activity2 : AppCompatActivity() {
                 }
             }
             try {
-                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "serv.csv"))
+                fileWriter = FileWriter(File(this.getExternalFilesDir(null), "serv" + Calendar.getInstance().timeInMillis.toString() + ".csv"))
                 fileWriter.append(CSV_HEADER_SERV)
                 fileWriter.append('\n')
 
